@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { CloudRain } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { WeatherData } from './app/models/weatherModel'
 
@@ -14,17 +13,18 @@ export function App() {
     loading: false,
     error: false,
   })
+  const [weatherColor, setWeatherColor] = useState('cold')
 
   const currentDate = new Date()
   const currentDateFormat = `${currentDate.getFullYear()}-${pad(currentDate.getMonth() + 1)}-${pad(currentDate.getDate())} ${pad(currentDate.getHours())}:${pad(currentDate.getMinutes())}`
 
-  function pad(n: any) {
+  function pad(n: number) {
     return n < 10 ? '0' + n : n
   }
 
   useEffect(() => {
     const handleWeather = async () => {
-      setWeather({ ...weather, loading: true })
+      setWeather((prevWeather) => ({ ...prevWeather, loading: true }))
 
       const url = 'http://api.weatherapi.com/v1/forecast.json'
       const apiKey = 'e2ac9e6881a945e3aa9191050240507 '
@@ -50,15 +50,37 @@ export function App() {
     handleWeather()
   }, [])
 
+  useEffect(() => {
+    setWeatherColor(
+      Math.round(weather.data?.current.temp_c ?? 0) > 22 ? 'hot' : 'cold',
+    )
+  }, [weather.data])
+
+  const weekDays = [
+    'Segunda',
+    'Terça',
+    'Quarta',
+    'Quinta',
+    'Sexta',
+    'Sábado',
+    'Domingo',
+  ]
+
   return (
-    <div className="flex min-h-svh w-full flex-col items-center justify-between p-4 text-center">
+    <div className="flex min-h-svh w-full flex-col items-center justify-between p-4 text-center md:fixed md:left-1/2 md:top-1/2 md:m-auto md:h-svh md:max-h-[840px] md:min-h-0 md:max-w-96 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border-2 md:border-gray-800 md:shadow-box">
       <h1 className="text-2xl leading-relaxed tracking-tight">
         {weather.data?.location.region}
       </h1>
 
       <section className="flex flex-1 flex-col items-center justify-center gap-12">
-        <div className="h-24 w-24 rounded-3xl shadow-cold">
-          <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-bl from-cyan-500 to-blue-500 shadow-box">
+        <div
+          data-color={weatherColor}
+          className="data-[color=hot]:shadow-hot h-24 w-24 rounded-3xl data-[color=cold]:shadow-cold"
+        >
+          <div
+            data-color={weatherColor}
+            className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-bl shadow-box data-[color=cold]:from-cyan-500 data-[color=hot]:from-orange-400 data-[color=cold]:to-blue-500 data-[color=hot]:to-orange-600"
+          >
             <h3 className="indent-2 text-4xl font-semibold leading-snug tracking-wider">
               {Math.round(weather.data?.current.temp_c ?? 0)}
               <sup>o</sup>
@@ -100,7 +122,12 @@ export function App() {
                 className="flex flex-col items-center justify-center gap-2 text-sm leading-snug tracking-wider"
               >
                 <p>{hour.time.split(' ')[1]}</p>
-                <CloudRain size={16} />
+                {/* <CloudRain size={16} /> */}
+                <img
+                  src={hour.condition.icon}
+                  className="h-6 w-6 object-contain"
+                  alt=""
+                />
                 <p>
                   {Math.round(hour.temp_c)}
                   <sup>o</sup>
@@ -116,7 +143,11 @@ export function App() {
                 key={i}
                 className="flex w-full items-center justify-between py-4 text-sm leading-snug tracking-wider"
               >
-                <span className="inline-block min-w-28">{day.date}</span>
+                <span className="inline-block min-w-20">
+                  {i === 0
+                    ? 'Today'
+                    : weekDays[new Date(day.date).getDay()].slice(0, 3)}
+                </span>
 
                 <span className="flex flex-1 items-center justify-center">
                   {/* <CloudRain size={16} /> */}

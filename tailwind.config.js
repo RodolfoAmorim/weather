@@ -8,6 +8,7 @@ export default {
       },
       boxShadow: {
         cold: '0 0 96px 0 rgba(14, 165, 233, .8)',
+        hot: '0 0 96px 0 rgba(251, 146, 60, .5)',
         box: '0 5.5px 5.5px 0 rgba(0, 0, 0, 0.25)',
       },
     },
