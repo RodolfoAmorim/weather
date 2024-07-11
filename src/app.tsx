@@ -75,7 +75,7 @@ export function App() {
       <section className="flex flex-1 flex-col items-center justify-center gap-12">
         <div
           data-color={weatherColor}
-          className="data-[color=hot]:shadow-hot h-24 w-24 rounded-3xl data-[color=cold]:shadow-cold"
+          className="h-24 w-24 rounded-3xl data-[color=cold]:shadow-cold data-[color=hot]:shadow-hot"
         >
           <div
             data-color={weatherColor}
